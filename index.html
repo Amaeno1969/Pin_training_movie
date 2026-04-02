@@ -9,10 +9,14 @@
       padding: 16px;
       background: #f5f5f5;
     }
+
+    /* ★ フル画面対応 */
     #player {
-      max-width: 640px;
+      width: 100%;
+      aspect-ratio: 16 / 9; /* 画面幅に応じて高さが決まる */
       margin-bottom: 16px;
     }
+
     ul {
       padding-left: 1.2em;
     }
@@ -36,19 +40,17 @@
   </ul>
 
   <script>
-    // 対象動画（URLから抽出した videoId）
     const videoList = [
-      "rnPisRvCa3A",   // https://www.youtube.com/watch?v=rnPisRvCa3A&t=0s
-      "-nYDBJ4z-fY",   // https://www.youtube.com/watch?v=-nYDBJ4z-fY&t=0s
-      "3WZbUs-mtMg",   // https://www.youtube.com/watch?v=3WZbUs-mtMg&t=0s
-      "nZQY-FplreA",   // https://www.youtube.com/watch?v=nZQY-FplreA&t=0s
-      "kqVe0NY4WdQ"    // https://www.youtube.com/watch?v=kqVe0NY4WdQ&t=0s
+      "rnPisRvCa3A",
+      "-nYDBJ4z-fY",
+      "3WZbUs-mtMg",
+      "nZQY-FplreA",
+      "kqVe0NY4WdQ"
     ];
 
     let index = 0;
     let player = null;
 
-    // 再生中の行にハイライトを付ける
     function updateListHighlight() {
       const list = document.querySelectorAll("#video-list li");
       list.forEach((li, i) => {
@@ -56,31 +58,24 @@
       });
     }
 
-    // YouTube IFrame API 読み込み
     const tag = document.createElement("script");
     tag.src = "https://www.youtube.com/iframe_api";
     document.body.appendChild(tag);
 
-    // API準備完了時に呼ばれる
     function onYouTubeIframeAPIReady() {
       player = new YT.Player("player", {
-        height: "390",
-        width: "640",
         videoId: videoList[index],
         playerVars: {
           autoplay: 1,
           rel: 0
         },
         events: {
-          onReady: () => {
-            updateListHighlight();
-          },
+          onReady: () => updateListHighlight(),
           onStateChange: onPlayerStateChange
         }
       });
     }
 
-    // 再生状態が変わったとき
     function onPlayerStateChange(event) {
       if (event.data === YT.PlayerState.ENDED) {
         index++;
@@ -88,13 +83,11 @@
           player.loadVideoById(videoList[index]);
           updateListHighlight();
         } else {
-          // 最後まで再生し終わったときの挙動（先頭に戻すならここで index=0 など）
           console.log("全動画の再生が終了しました");
         }
       }
     }
 
-    // グローバルに公開（YouTube API仕様）
     window.onYouTubeIframeAPIReady = onYouTubeIframeAPIReady;
     window.onPlayerStateChange = onPlayerStateChange;
   </script>
